@@ -9,7 +9,6 @@ async function sendTokenResponse(user, res, message) {
         { expiresIn: "7d" }
     )
 
-    // Still set the cookie (works when same domain / non-Brave)
     res.cookie("token", token, {
         httpOnly: true,
         secure: true,
@@ -17,12 +16,10 @@ async function sendTokenResponse(user, res, message) {
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
 
-    // Also return token in response body so frontend can store in localStorage
-    // This is the cross-domain / Brave-safe fallback
     res.status(200).json({
         message,
         success: true,
-        token,          // ← frontend saves this to localStorage
+        token,
         user: {
             id: user._id,
             email: user.email,
@@ -82,7 +79,7 @@ export const login = async (req, res) => {
 }
 
 export const googleCallback = async (req, res) => {
-    const { id, displayName, emails, photos } = req.user
+    const { id, displayName, emails } = req.user
 
     const email = emails[0].value
 
@@ -109,7 +106,7 @@ export const googleCallback = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
 
-    // Pass token in URL so frontend can save it to localStorage
+    // Token in URL so frontend saves it to localStorage (works cross-domain)
     res.redirect(`https://clothy-frontend-mu.vercel.app?token=${token}`)
 }
 
