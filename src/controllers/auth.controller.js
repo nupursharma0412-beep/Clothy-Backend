@@ -13,8 +13,8 @@ async function sendTokenResponse(user , res,message) {
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     })
     res.status(200).json({
@@ -119,8 +119,8 @@ export const googleCallback = async (req,res)=>{
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
     res.redirect("https://clothy-frontend-mu.vercel.app/")
@@ -130,7 +130,7 @@ export const googleCallback = async (req,res)=>{
 
 export const getMe = async(req,res)=>{
     const user = req.user;
-    res.status(200).json({
+    return res.status(200).json({
         message:"user fatch successfully",
         success:true,
         user:{
