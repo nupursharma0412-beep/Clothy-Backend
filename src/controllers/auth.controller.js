@@ -123,7 +123,7 @@ export const googleCallback = async (req,res)=>{
         sameSite: 'none',
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
-    res.redirect("https://clothy-backend-djl7.onrender.com/api/auth/me")
+    res.redirect("https://clothy-frontend-mu.vercel.app")
 }
 
 
