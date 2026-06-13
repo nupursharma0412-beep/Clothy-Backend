@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors({
   origin: "https://clothy-frontend-mu.vercel.app",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
   credentials: true
 }))
 
