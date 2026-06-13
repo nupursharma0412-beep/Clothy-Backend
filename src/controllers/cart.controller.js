@@ -1,6 +1,7 @@
 import cartModel from '../models/cart.model.js'
 import productModel from '../models/product.model.js'
 import { stockOfVariant } from '../dao/product.dao.js'
+import { getCartDetails } from '../dao/cart.dao.js'
 
 export const addToCart = async (req, res) => {
 
@@ -115,7 +116,15 @@ export const getCart = async (req, res) => {
 
     const user = req.user
 
-    const cart = await cartModel.findOne({ user: user._id }).populate("items.product")
+    const cart = await getCartDetails(user._id)
+
+    if (!cart) {
+        return res.status(200).json({
+            message: "Cart is empty",
+            success: true,
+            cart: { items: [], totalPrice: 0, currency: "INR" }
+        })
+    }
 
     return res.status(200).json({
         message: "Cart fetched successfully",
