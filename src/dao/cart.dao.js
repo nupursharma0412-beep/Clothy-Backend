@@ -19,14 +19,19 @@ export async function getCartDetails(userId) {
         },
         { $unwind: { path: '$items.product' } },
         {
-            $unwind: { path: '$items.product.variants' }
-        },
-        {
-            $match: {
-                $expr: {
-                    $eq: [
-                        '$items.variant',
-                        '$items.product.variants._id'
+            // Find the matching variant using $filter instead of $unwind
+            // so variants stays as an array
+            $addFields: {
+                matchedVariant: {
+                    $arrayElemAt: [
+                        {
+                            $filter: {
+                                input: '$items.product.variants',
+                                as: 'variant',
+                                cond: { $eq: ['$$variant._id', '$items.variant'] }
+                            }
+                        },
+                        0
                     ]
                 }
             }
@@ -37,12 +42,13 @@ export async function getCartDetails(userId) {
                     price: {
                         $multiply: [
                             '$items.quantity',
-                            '$items.product.variants.price.amount'
+                            '$matchedVariant.price.amount'
                         ]
                     },
-                    currency:
-                        '$items.product.variants.price.currency'
-                }
+                    currency: '$matchedVariant.price.currency'
+                },
+                // Keep only the matched variant in the array
+                'items.product.variants': ['$matchedVariant']
             }
         },
         {
